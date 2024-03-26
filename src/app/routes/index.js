@@ -2,23 +2,31 @@ const express = require('express');
 
 const LoginController = require('../controllers/LoginController');
 const DocesController = require('../controllers/DocesController');
+const CategoryController = require('../controllers/CategoryController');
 
-const routes = express.Router();
+const router = express.Router();
+
+// USUARIOS
 
 // criar os usuários
-routes.post('/cadastro', LoginController.store);
+router.post('/cadastro', LoginController.store);
 // mostrar os usuários cadastrados
-routes.get('/login/users', LoginController.index);
+router.get('/login/users', LoginController.index);
 // verificar o usuário e se ele pode logar
-routes.get('/login', LoginController.show);
+router.get('/login/:id', LoginController.show);
+router.delete('/login/users/:id', LoginController.delete);
 
-routes.get(
-  '/docesList',
-  DocesController.index,
-);
-routes.get('/docesList/:id', DocesController.show);
-routes.delete('/docesList/:id', DocesController.delete);
-routes.post('/docesList', DocesController.store);
-routes.put('/docesList/:id', DocesController.update);
+// DOCES
+router.get('/docesList', DocesController.index);
+router.get('/docesList/:id', DocesController.show);
+router.delete('/docesList/:id', DocesController.delete);
+router.post('/docesList', DocesController.store);
+router.put('/docesList/:id', DocesController.update);
 
-module.exports = routes;
+// CATEGORIAS
+router.get('/categories', CategoryController.index);
+router.get('/categories/:id', CategoryController.show);
+router.post('/categories', CategoryController.store);
+router.delete('/categories/:id', CategoryController.delete);
+
+module.exports = router;

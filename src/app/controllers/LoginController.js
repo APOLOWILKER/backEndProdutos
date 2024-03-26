@@ -4,7 +4,7 @@ class LoginController {
   async index(request, response) {
     // Listar todos os registros
     const { orderBy } = request.query;
-    const usuarios = await LoginController.findAll(orderBy);
+    const usuarios = await LoginRepository.findAll(orderBy);
 
     response.json(usuarios);
   }
@@ -36,11 +36,11 @@ class LoginController {
       return response.status(400).json({ error: 'Esse usuario já existe' });
     }
 
-    const doce = await LoginRepository.create({
+    const usuario = await LoginRepository.create({
       email, senha,
     });
 
-    response.json(doce);
+    response.json(usuario);
   }
 
   async delete(request, response) {

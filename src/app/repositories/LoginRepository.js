@@ -21,7 +21,7 @@ class LoginsRepository {
   async findByEmail(email) {
     const [row] = await db.query(`
     SELECT * FROM usuarios
-    WHERE id = $1
+    WHERE email = $1
   `, [email]);
     return row;
   }

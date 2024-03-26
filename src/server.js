@@ -1,11 +1,16 @@
 const express = require('express');
-const routes = require('./app/routes');
+const router = require('./app/routes');
+const { errorHandler } = require('./app/middlewares');
 
 const app = express();
+const PORT = process.env.PORT || 3000;
+
 app.use(express.json());
 
-app.use(routes);
+// ROTAS
+app.use(errorHandler);
+app.use(router);
 
-app.listen(3000, () => {
-  console.log('Listening on port 3000 in http://localhost:3000');
+app.listen(PORT, () => {
+  console.log(`Listening on port 3000 in http://localhost:${PORT}`);
 });
