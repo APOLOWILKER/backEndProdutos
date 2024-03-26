@@ -5,15 +5,15 @@ const DocesController = require('../controllers/DocesController');
 
 const routes = express.Router();
 
-// falta criar
-routes.post('/login', LoginController.index);
+// criar os usuários
+routes.post('/cadastro', LoginController.store);
+// mostrar os usuários cadastrados
+routes.get('/login/users', LoginController.index);
+// verificar o usuário e se ele pode logar
+routes.get('/login', LoginController.show);
 
 routes.get(
   '/docesList',
-  (request, response, next) => {
-    request.appId = 'MeuAppID';
-    next();
-  },
   DocesController.index,
 );
 routes.get('/docesList/:id', DocesController.show);

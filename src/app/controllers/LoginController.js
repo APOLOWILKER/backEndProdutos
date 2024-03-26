@@ -1,23 +1,55 @@
+const LoginRepository = require('../repositories/LoginRepository');
+
 class LoginController {
-  index(request, response) {
+  async index(request, response) {
     // Listar todos os registros
-    response.send('Send from Login Controller');
+    const { orderBy } = request.query;
+    const usuarios = await LoginController.findAll(orderBy);
+
+    response.json(usuarios);
   }
 
-  show() {
+  async show(request, response) {
     // obter UM registro
+    const { id } = request.params;
+
+    const usuario = await LoginRepository.findById(id);
+
+    if (!usuario) {
+      return response.status(404).json({ error: 'Usuario não encontrado' });
+    }
+
+    response.json(usuario);
   }
 
-  store() {
+  async store(request, response) {
     // criar novo registro
+    const { email, senha } = request.body;
+
+    if (!email || !senha) {
+      return response.status(400).json({ error: 'Usuário deve ter email e senha' });
+    }
+
+    const usuarioExiste = await LoginRepository.findByEmail(email);
+
+    if (usuarioExiste) {
+      return response.status(400).json({ error: 'Esse usuario já existe' });
+    }
+
+    const doce = await LoginRepository.create({
+      email, senha,
+    });
+
+    response.json(doce);
   }
 
-  update() {
-    // editar um registro
-  }
-
-  delete() {
+  async delete(request, response) {
     // deletar um registro
+    const { id } = request.params;
+
+    await LoginRepository.delete(id);
+
+    response.sendStatus(204);
   }
 }
 

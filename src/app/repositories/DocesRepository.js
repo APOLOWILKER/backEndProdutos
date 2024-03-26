@@ -1,74 +1,59 @@
-const { v4 } = require('uuid');
-
-let doces = [
-  {
-    id: v4(),
-    doceName: 'bombom',
-    category: 'chocolate',
-  },
-  {
-    id: v4(),
-    doceName: 'Paçoca',
-    category: 'doce-caseiro',
-  },
-];
+const db = require('../../database');
 
 class DocesRepository {
-  findAll() {
-    return new Promise((resolve) => {
-      resolve(doces);
-    });
+  async findAll(orderBy = 'ASC') {
+    const direction = orderBy?.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+    const rows = await db.query(`
+      SELECT * FROM doces
+      ORDER BY doceName ${direction}
+    `);
+    return rows;
   }
 
-  findById(id) {
-    return new Promise((resolve) => {
-      resolve(
-        doces.find((doce) => doce.id === id),
-      );
-    });
+  async findById(id) {
+    const [row] = await db.query(`
+    SELECT * FROM doces
+    WHERE id = $1
+  `, [id]);
+    return row;
   }
 
-  findByName(doceName) {
-    return new Promise((resolve) => {
-      resolve(
-        doces.find((doce) => doce.doceName === doceName),
-      );
-    });
+  async findByName(doceName) {
+    const [row] = await db.query(`
+    SELECT * FROM doces
+    WHERE id = $1
+  `, [doceName]);
+    return row;
   }
 
-  create({ doceName, category }) {
-    return new Promise((resolve) => {
-      const novoDoce = {
-        id: v4(),
-        doceName,
-        category,
-      };
-      doces.push(novoDoce);
-      resolve(novoDoce);
-    });
+  async create({
+    doceName, category_id,
+  }) {
+    const [row] = await db.query(`
+    INSERT INTO doces(doceName, category_id)
+    VALUES($1, $2)
+    RETURNING *
+    `, [doceName, category_id]);
+
+    return row;
   }
 
-  update(id, { doceName, category }) {
-    return new Promise((resolve) => {
-      const atualizandoDoce = {
-        id,
-        doceName,
-        category,
-      };
-
-      doces = doces.map((doce) => (
-        doce.id === id ? atualizandoDoce : doce
-      ));
-
-      resolve(atualizandoDoce);
-    });
+  async update(id, { doceName, category_id }) {
+    const [row] = await db.query(`
+      UPDATE doces
+      SET name = $1, category_id = $2
+      WHERE id = $3
+      RETURNING *
+    `, [doceName, category_id, id]);
+    return row;
   }
 
-  delete(id) {
-    return new Promise((resolve) => {
-      doces = doces.filter((doce) => doce.id !== id);
-      resolve();
-    });
+  async delete(id) {
+    const deleteOp = await db.query(`
+      DELETE FROM doces
+      WHERE id = $1
+    `, [id]);
+    return deleteOp;
   }
 }
 

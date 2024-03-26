@@ -3,7 +3,8 @@ const DocesRepository = require('../repositories/DocesRepository');
 class DocesController {
   async index(request, response) {
     // Listar todos os registros
-    const doces = await DocesRepository.findAll();
+    const { orderBy } = request.query;
+    const doces = await DocesRepository.findAll(orderBy);
 
     response.json(doces);
   }
@@ -23,10 +24,10 @@ class DocesController {
 
   async store(request, response) {
     // criar novo registro
-    const { doceName, category } = request.body;
+    const { doceName, category_id } = request.body;
 
-    if (!doceName || !category) {
-      return response.status(400).json({ error: 'doceName e category são necessários' });
+    if (!doceName) {
+      return response.status(400).json({ error: 'doceName é necessário' });
     }
 
     const doceExists = await DocesRepository.findByName(doceName);
@@ -36,7 +37,7 @@ class DocesController {
     }
 
     const doce = await DocesRepository.create({
-      doceName, category,
+      doceName, category_id,
     });
 
     response.json(doce);
@@ -47,26 +48,21 @@ class DocesController {
     const { id } = request.params;
 
     const {
-      doceName, category,
+      doceName, category_id,
     } = request.body;
 
     const docesExists = await DocesRepository.findById(id);
-    const doceNameExists = await DocesRepository.findByName(doceName);
 
     if (!docesExists) {
       return response.status(404).json({ error: 'Doce Não encontrado' });
     }
 
-    if (!doceName || !category) {
-      return response.status(400).json({ error: 'doceName e category são necessários' });
-    }
-
-    if (docesExists && doceNameExists) {
-      return response.status(400).json({ error: 'Esse doce já existe, não precisa atualizar' });
+    if (!doceName) {
+      return response.status(400).json({ error: 'doceName e necessários' });
     }
 
     const doce = await DocesRepository.update(id, {
-      doceName, category,
+      doceName, category_id,
     });
 
     response.json(doce);
@@ -75,12 +71,6 @@ class DocesController {
   async delete(request, response) {
     // deletar um registro
     const { id } = request.params;
-
-    const doce = await DocesRepository.findById(id);
-
-    if (!doce) {
-      return response.status(404).json({ error: 'User not found' });
-    }
 
     await DocesRepository.delete(id);
 
