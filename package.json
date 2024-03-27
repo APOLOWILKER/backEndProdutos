@@ -9,6 +9,7 @@
   },
     "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "vercel-build": "echo 'vercel-build'",
     "dev": "nodemon src/server.js",
     "start": "node server.js"
   },
