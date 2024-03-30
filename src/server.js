@@ -1,10 +1,12 @@
 const express = require('express');
+const cors = require('cors');
 const router = require('./app/routes');
 const { errorHandler } = require('./app/middlewares');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(cors());
 app.use(express.json());
 
 // ROTAS
